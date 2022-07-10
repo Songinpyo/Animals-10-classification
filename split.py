@@ -1,3 +1,5 @@
+# original code : https://github.com/hsh-dev/classfication
+
 import os
 from translate import translate
 import random

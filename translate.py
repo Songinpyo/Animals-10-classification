@@ -1,3 +1,5 @@
+# original code : https://github.com/hsh-dev/classfication
+
 translate = {
     "cane": "dog", 
     "cavallo": "horse", 

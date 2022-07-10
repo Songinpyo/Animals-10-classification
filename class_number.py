@@ -1,3 +1,5 @@
+# original code : https://github.com/hsh-dev/classfication
+
 CLASS_NUMBER = {
     "butterfly": 0,
     "cat": 1,
