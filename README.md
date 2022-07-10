@@ -33,14 +33,15 @@ verify : classfication 폴더 안에 train_img 와 test_img 폴더가 생기면 
 
 #### Dataset download, Preprocessing data code from [hsh-dev](https://github.com/hsh-dev/classfication)
 
+
 ## Main Idea
 
-  1. Augmentation
+  1. **Augmentation**
       - Augmentate images using crop, rotate ...
   
-  2. Use transfer learning
+  2. **Transfer learning**
       - Use Resnet, effientnet ... etc
       
-  3. Essemble
+  3. **Essemble**
       - Essemble the results of diffrent models
 
