@@ -40,7 +40,7 @@ verify : classfication 폴더 안에 train_img 와 test_img 폴더가 생기면 
       - Augmentate images using crop, rotate ...
   
   2. **Transfer learning**
-      - Use Resnet, effientnet ... etc
+      - Use 'Efficient_Net_v2', 'Efficient_Net_v1b5', 'ConvNext_tiny' models
       
   3. **Essemble**
       - Essemble the results of diffrent models
