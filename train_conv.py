@@ -203,7 +203,7 @@ def train(model, optimizer, train_loader, vali_loader, scheduler, device, fold):
 
         epochs = HYP["EPOCHS"]
         print(f'epoch : {epoch}/{epochs}    time : {TIME:.0f}s/{TIME * (epochs - epoch - 1):.0f}s')
-        print(f'TRAIN_loss : {train_loss:.5f}  TRAIN_f1 : {train_f1:.5f}')
+        print(f'TRAIN_loss : [{train_loss:.5f}  TRAIN_f1 : {train_f1:.5f}]')
 
         if scheduler is not None:
             scheduler.step()
@@ -235,11 +235,12 @@ def validation(model, vali_loader, criterion, device):
             label = torch.tensor(batch[1], dtype=torch.long, device=device)
 
             # Calc loss
+            with torch.cuda.amp.autocast():
+                pred = model(img)
+
             loss = criterion(pred, label)
 
-            pred = model(img)
             vali_loss += loss.item() / len(vali_loader)
-
             vali_pred += pred.argmax(1).detach().cpu().numpy().tolist()
             vali_label += label.detach().cpu().numpy().tolist()
 
