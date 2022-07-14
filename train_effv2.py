@@ -154,8 +154,7 @@ def count_parameters(model):
 class efficientnet_v2(nn.Module):
     def __init__(self):
         super(efficientnet_v2, self).__init__()
-        self.model = torch.hub.load("pytorch/vision", "efficientnet_v2_s",
-                                    weights="EfficientNet_V2_S_Weights.IMAGENET1K_V1")
+        self.model = models.efficientnet_v2_s(models.EfficientNet_V2_S_Weights)
 
         # num_ftrs = self.model.fc.in_features
         # self.model.fc = nn.Linear(num_ftrs, 10)
@@ -240,10 +239,8 @@ def validation(model, vali_loader, criterion, device):
     vali_loss = 0
     vali_pred = []
     vali_label = []
-
     with torch.no_grad():
         for batch in (vali_loader):
-            optimizer.zero_grad()
             img = torch.tensor(batch[0]['image'], dtype=torch.float32, device=device)
             label = torch.tensor(batch[1], dtype=torch.long, device=device)
 
@@ -276,10 +273,10 @@ for fold, (train_idx, valid_idx) in enumerate(kf.split(list_idx)):
 
     # Get Dataloader
     train_dataset = Custom_dataset(train_img_list, train_label, mode='train', )
-    train_loader = DataLoader(train_dataset, batch_size=HYP['BATCH_SIZE'], shuffle=True, num_workers=16)
+    train_loader = DataLoader(train_dataset, batch_size=HYP['BATCH_SIZE'], shuffle=True, num_workers=0)
 
     vali_dataset = Custom_dataset(vali_img_list, vali_label, mode='test')
-    vali_loader = DataLoader(vali_dataset, batch_size=HYP['BATCH_SIZE'], shuffle=False, num_workers=16)
+    vali_loader = DataLoader(vali_dataset, batch_size=HYP['BATCH_SIZE'], shuffle=False, num_workers=0)
 
     model = efficientnet_v2().to(device)
 

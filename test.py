@@ -42,6 +42,7 @@ def seed_everything(seed):
 
 
 seed_everything(HYP['SEED'])
+
 classes = ["butterfly", "cat", "chicken", "cow", "dog", "elephant", "horse", "sheep", "spider", "squirrel"]
 test_img = []
 
@@ -130,13 +131,13 @@ def count_parameters(model):
     print(f"Total Trainable Params: {total_params}")
     return total_params
 
-class Resnet50(torch.nn.Module):
+class efficientnet_v2(nn.Module):
     def __init__(self):
-        super(Resnet50, self).__init__()
-        self.model = models.resnet50(pretrained=True)
+        super(efficientnet_v2, self).__init__()
+        self.model = models.efficientnet_v2_s(models.EfficientNet_V2_S_Weights)
 
-        num_ftrs = self.model.fc.in_features
-        self.model.fc = nn.Linear(num_ftrs, 10)
+        # num_ftrs = self.model.fc.in_features
+        # self.model.fc = nn.Linear(num_ftrs, 10)
 
         count_parameters(self.model)
 
@@ -152,37 +153,45 @@ path = './saved/'
 if not os.path.isdir(path):
     os.mkdir(path)
 
-test_dataset = Custom_dataset(np.array(test_imgs), np.array(["tmp"]*len(test_imgs)), mode='test')
-test_loader = DataLoader(test_dataset, batch_size = HYP["BATCH_SIZE"], shuffle=False, num_workers=0)
-
 def predict(model, test_loader, device):
     model.eval()
 
     test_pred = []
     test_label = []
+    correct = 0
 
     with torch.no_grad():
         for batch in (test_loader):
             img = torch.tensor(batch[0]['image'], dtype=torch.float32, device=device)
             label = torch.tensor(batch[1], dtype=torch.long, device=device)
 
-            pred = model(img)
-            pred = pred.squeeze(1).detach().cpu()
-
-            pred = pred.squeeze(1).detach().cpu()
-            label = label.detach().cpu()
+            # Calc loss
+            with torch.cuda.amp.autocast():
+                pred = model(img)
 
             test_pred += pred.argmax(1).detach().cpu().numpy().tolist()
             test_label += label.detach().cpu().numpy().tolist()
 
+            correct += pred.eq(label.view_as(pred)).sum().item()
+
+        test_acc = 100*correct/len(test_labels)
         test_f1 = score_function(test_label, test_pred)
-        print(f'test_f1 [{test_f1}]')
+        print(f'test_acc [{test_acc}]', f'test_f1 [{test_f1}]')
 
     return test_pred
 
+list_idx = list(np.arange(0,len(test_imgs)))
 
-checkpoint = torch.load('./saved/res50_fold{}.pth'.format(4))
-model = Resnet50().to(device)
+for test_idx in enumerate(list_idx):
+
+    test_img_list = [test_imgs[i] for i in test_idx]
+    test_label = [test_labels[i] for i in test_idx]
+
+    test_dataset = Custom_dataset(test_img_list, test_label, mode='test', )
+    test_loader = DataLoader(test_dataset, batch_size=HYP["BATCH_SIZE"], shuffle=False, num_workers=0)
+
+checkpoint = torch.load('./saved/effv2_fold{}.pth'.format(4))
+model = efficientnet_v2().to(device)
 model.load_state_dict(checkpoint)
 
 preds = predict(model, test_loader, device)
