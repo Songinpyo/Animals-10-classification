@@ -43,7 +43,7 @@ verify : classfication 폴더 안에 train_img 와 test_img 폴더가 생기면 
       - Use 'Efficient_Net_v2', 'ConvNext_tiny' models
       - 비교적 경량화 된 모델 사용
       
-  3. K-Fold
+  3. **K-Fold**
      - 5fold로 학습시켜 각 fold별 학습된 모델도 Essemble에 사용하였다.
       
   4. **Essemble**
